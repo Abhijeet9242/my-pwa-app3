@@ -11,7 +11,7 @@ import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies';
 
 clientsClaim();
 
@@ -57,6 +57,20 @@ registerRoute(
       // Ensure that once this runtime cache reaches a maximum size the
       // least-recently used images are removed.
       new ExpirationPlugin({ maxEntries: 50 }),
+    ],
+  })
+);
+
+// Cache OMDB API responses dynamically using CacheFirst strategy
+registerRoute(
+  ({ url }) => url.origin === 'http://www.omdbapi.com' && url.pathname === '/?apikey=ed6c64f7',  // Match the OMDB API requests
+  new CacheFirst({
+    cacheName: 'omdb-api-cache',  // Cache name for storing OMDB API responses
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 50,  // Max number of responses to cache
+        maxAgeSeconds: 60 * 60 * 24 * 7,  // Cache responses for 7 days
+      }),
     ],
   })
 );
