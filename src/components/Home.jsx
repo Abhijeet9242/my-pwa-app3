@@ -6,45 +6,39 @@ const Home = () => {
   const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
-    // Check if the user is offline
-    setIsOffline(!navigator.onLine);
-
-    // Define the search text based on online or offline status
-    const searchText = isOffline ? 'avenger' : 'thor';  // Use "Spiderman" for offline and "Thor" for online
-
-    // Fetch movie data for either "Spiderman" or "Thor"
     const fetchMovieData = async () => {
-      const apiKey = 'ed6c64f7';  // Replace with your OMDB API Key
-      const url = `http://www.omdbapi.com?apikey=${apiKey}&s=${searchText}`;
-
+      const apiKey = 'ed6c64f7';
+      const searchText = isOffline ? 'avenger' : 'thor';
+      const url = `https://www.omdbapi.com?apikey=${apiKey}&s=${searchText}`;
+  
       try {
-        // First, check if the response is available in the cache
         const cachedResponse = await caches.match(url);
         if (cachedResponse) {
           const cachedData = await cachedResponse.json();
-          setMovieData(cachedData.Search || []); // Ensure Search is an array
+          setMovieData(cachedData.Search || []);
+          console.log('Loaded from cache:', cachedData);
         } else {
-          // If not available in cache, fetch from OMDB API
           const response = await fetch(url);
-          const responseClone = response.clone(); // Clone the response before using it
-
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
           const data = await response.json();
-          setMovieData(data.Search || []); // Ensure Search is an array
-
-          // Cache the response for offline access
-          if (response.ok) {
+          setMovieData(data.Search || []);
+  
+          if (data.Search) {
             const cache = await caches.open('omdb-api-cache');
-            cache.put(url, responseClone); // Use the cloned response for caching
+            cache.put(url, response.clone());
+            console.log('Cached data:', data);
           }
         }
       } catch (error) {
-        console.error('Failed to fetch data', error);
+        console.error('Failed to fetch data:', error);
       }
     };
-
+  
     fetchMovieData();
-  }, [isOffline]);  // Re-run the effect when the online/offline status changes
-
+  }, [isOffline]);
+  
   return (
     <div className='row'>
       {movieData.length > 0 ? (

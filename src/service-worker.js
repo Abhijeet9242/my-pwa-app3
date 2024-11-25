@@ -64,17 +64,17 @@ registerRoute(
 
 // Cache OMDB API responses dynamically using CacheFirst strategy
 registerRoute(
-  // Match the OMDB API requests for search queries (Spiderman and Thor)
+  // Match the OMDB API requests for search queries (e.g., "avenger" and "thor")
   ({ url }) => {
-    const urlPattern = /http:\/\/www\.omdbapi\.com\?apikey=ed6c64f7&s=(avenger|thor)/;
-    return url.origin === 'http://www.omdbapi.com' && urlPattern.test(url.href);  // Match OMDB API search URL
+    const urlPattern = /https:\/\/www\.omdbapi\.com\?apikey=ed6c64f7&s=(avenger|thor)/;
+    return url.origin === 'https://www.omdbapi.com' && urlPattern.test(url.href); // Match HTTPS OMDB API search URL
   },
   new CacheFirst({
-    cacheName: 'omdb-api-cache',  // Cache name for storing OMDB API responses
+    cacheName: 'omdb-api-cache', // Cache name for storing OMDB API responses
     plugins: [
       new ExpirationPlugin({
-        maxEntries: 50,  // Max number of responses to cache
-        maxAgeSeconds: 60 * 60 * 24 * 7,  // Cache responses for 7 days
+        maxEntries: 50, // Max number of responses to cache
+        maxAgeSeconds: 60 * 60 * 24 * 7, // Cache responses for 7 days
       }),
     ],
   })
