@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import MovieCard from "./MovieCard";
 
 const Home = () => {
-
-  const [movieData, setMovieData] = useState(null);
+  const [movieData, setMovieData] = useState([]); // Initialize as an empty array
   const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
@@ -23,17 +22,19 @@ const Home = () => {
         const cachedResponse = await caches.match(url);
         if (cachedResponse) {
           const cachedData = await cachedResponse.json();
-          setMovieData(cachedData);
+          setMovieData(cachedData.Search || []); // Ensure Search is an array
         } else {
           // If not available in cache, fetch from OMDB API
           const response = await fetch(url);
+          const responseClone = response.clone(); // Clone the response before using it
+
           const data = await response.json();
-          setMovieData(data);
+          setMovieData(data.Search || []); // Ensure Search is an array
 
           // Cache the response for offline access
           if (response.ok) {
             const cache = await caches.open('omdb-api-cache');
-            cache.put(url, response);
+            cache.put(url, responseClone); // Use the cloned response for caching
           }
         }
       } catch (error) {
@@ -44,15 +45,17 @@ const Home = () => {
     fetchMovieData();
   }, [isOffline]);  // Re-run the effect when the online/offline status changes
 
-
-
   return (
     <div className='row'>
-    {movieData.map((movie) => (
-      <MovieCard key={movie.imdbID} movie={movieData} />
-    ))}
+      {movieData.length > 0 ? (
+        movieData.map((movie) => (
+          <MovieCard key={movie.imdbID} movie={movie} />
+        ))
+      ) : (
+        <p>No movies found</p> // Display a message if no data is available
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
