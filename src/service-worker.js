@@ -66,7 +66,7 @@ registerRoute(
 registerRoute(
   // Match the OMDB API requests for search queries (Spiderman and Thor)
   ({ url }) => {
-    const urlPattern = /http:\/\/www\.omdbapi\.com\?apikey=YOUR_OMDB_API_KEY&s=(avenger|thor)/;
+    const urlPattern = /http:\/\/www\.omdbapi\.com\?apikey=ed6c64f7&s=(avenger|thor)/;
     return url.origin === 'http://www.omdbapi.com' && urlPattern.test(url.href);  // Match OMDB API search URL
   },
   new CacheFirst({
