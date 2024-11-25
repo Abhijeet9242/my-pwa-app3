@@ -11,7 +11,7 @@ const Home = () => {
     setIsOffline(!navigator.onLine);
 
     // Define the search text based on online or offline status
-    const searchText = isOffline ? 'Spiderman' : 'Thor';  // Use "Spiderman" for offline and "Thor" for online
+    const searchText = isOffline ? 'avenger' : 'thor';  // Use "Spiderman" for offline and "Thor" for online
 
     // Fetch movie data for either "Spiderman" or "Thor"
     const fetchMovieData = async () => {

@@ -61,9 +61,14 @@ registerRoute(
   })
 );
 
+
 // Cache OMDB API responses dynamically using CacheFirst strategy
 registerRoute(
-  ({ url }) => url.origin === 'http://www.omdbapi.com' && url.pathname === '/?apikey=ed6c64f7',  // Match the OMDB API requests
+  // Match the OMDB API requests for search queries (Spiderman and Thor)
+  ({ url }) => {
+    const urlPattern = /http:\/\/www\.omdbapi\.com\?apikey=YOUR_OMDB_API_KEY&s=(avenger|thor)/;
+    return url.origin === 'http://www.omdbapi.com' && urlPattern.test(url.href);  // Match OMDB API search URL
+  },
   new CacheFirst({
     cacheName: 'omdb-api-cache',  // Cache name for storing OMDB API responses
     plugins: [
@@ -74,6 +79,7 @@ registerRoute(
     ],
   })
 );
+
 
 // This allows the web app to trigger skipWaiting via
 // registration.waiting.postMessage({type: 'SKIP_WAITING'})
