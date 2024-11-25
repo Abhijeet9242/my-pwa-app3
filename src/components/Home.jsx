@@ -7,7 +7,7 @@ const Home = () => {
 
   useEffect(() => {
     const fetchMovieData = async () => {
-      const apiKey = 'ed6c64f7';
+      const apiKey = process.env.REACT_APP_OMDB_API_KEY; 
       const searchText = isOffline ? 'avenger' : 'thor';
       const url = `https://www.omdbapi.com?apikey=${apiKey}&s=${searchText}`;
   
